@@ -45,6 +45,9 @@ export default class InputStyleNumber extends React.Component {
   onChangeText = (newText) => {
     const removedNonAlphaNumberic = newText.replace(/[^0-9a-z]/gi, '');
     this.setState({styleNumber: removedNonAlphaNumberic});
+    if (newText.length === 6) {
+      this.props.onStyleNumberInputed(removedNonAlphaNumberic);
+    }
   }
 }
 

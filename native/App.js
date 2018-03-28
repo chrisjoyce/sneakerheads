@@ -1,16 +1,31 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, WebView, Platform } from 'react-native';
 import InputStyleNumber from './components/InputStyleNumber'
-import { Container, Header, Content, Icon, Left, Right, Body, Title, Button, Item, Input } from 'native-base';
+import { Container } from 'native-base';
 
 export default class App extends React.Component {
+  state = {
+    styleNumber: 0
+  };
+
   render() {
     return (
-      <Container>
-        <InputStyleNumber></InputStyleNumber>
+      <Container style={{paddingTop: Platform.OS === 'ios' ? 0 : Expo.Constants.statusBarHeight}}>
+        <InputStyleNumber 
+          styleNumber={this.state.styleNumber}
+          onStyleNumberInputed={this.onStyleNumberChanged}></InputStyleNumber>
+        
+        <WebView
+          source={{uri: this.state.searchURL}}
+          style={{marginTop: 20}}
+        />
       </Container>
     );
   }
+
+  onStyleNumberChanged = (styleNumber) => {
+    this.setState({searchURL: `https://www.google.com/search?q=${styleNumber}`});
+  };
 
   onPressLearnMore() {
     console.log('test');
