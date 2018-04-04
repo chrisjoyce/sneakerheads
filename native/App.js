@@ -1,29 +1,37 @@
 import React from 'react';
-import { StyleSheet, WebView, Platform } from 'react-native';
+import { StyleSheet, Platform, View, SafeAreaView, WebView } from 'react-native'; 
 import InputStyleNumber from './components/InputStyleNumber'
-import { Container } from 'native-base';
+import SearchEBay from './components/SearchEBay';
 
 export default class App extends React.Component {
+
+  // async componentWillMount() {
+  //   await Expo.Font.loadAsync({
+  //     'Roboto': require('native-base/Fonts/Roboto.ttf'),
+  //     'Roboto_medium': require('native-base/Fonts/Roboto_medium.ttf'),
+  //   });
+  // }
+  
   state = {
     styleNumber: 0
   };
 
   render() {
     return (
-      <Container style={{paddingTop: Platform.OS === 'ios' ? 0 : Expo.Constants.statusBarHeight}}>
-        <InputStyleNumber 
-          styleNumber={this.state.styleNumber}
-          onStyleNumberInputed={this.onStyleNumberChanged}></InputStyleNumber>
-        
-        <WebView
-          source={{uri: this.state.searchURL}}
-          style={{marginTop: 20}}
-        />
-      </Container>
+      <SafeAreaView style={styles.safeareastyle}>
+        <View style={{borderWidth: 1}}>
+          <InputStyleNumber 
+            styleNumber={this.state.styleNumber}
+            onStyleNumberInputed={this.onStyleNumberChanged} />
+        </View>
+        <SearchEBay
+          searchURL={this.state.searchURL} />
+      </SafeAreaView>
     );
   }
 
   onStyleNumberChanged = (styleNumber) => {
+    console.log(`[Searching .... ${styleNumber}]`);
     this.setState({searchURL: `https://www.google.com/search?q=${styleNumber}`});
   };
 
@@ -33,10 +41,15 @@ export default class App extends React.Component {
 }
 
 const styles = StyleSheet.create({
-  container: {
+  safeareastyle: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    paddingTop: (Platform.OS === 'ios' ? 0 : Expo.Constants.statusBarHeight),
+    flexDirection: 'column'
   },
+  viewmain: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  }
 });
