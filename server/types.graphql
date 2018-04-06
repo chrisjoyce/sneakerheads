@@ -1,0 +1,59 @@
+# The following types define the data model of the example service
+# based on which the GraphQL API is generated
+
+# type User @model {
+#   id: ID! @isUnique
+#   name: String
+#   dateOfBirth: DateTime
+
+#   # Uncomment below - you can declare relations between models like this
+
+#   # posts: [Post!]! @relation(name: "UserPosts")
+# }
+
+type Shoe @model {
+  id: ID! @isUnique
+
+  brand: Brand! @relation(name: "ShoeToBrand")
+  description: String!  # longer description test used in informational panels
+  searchDescription: String!  # what gets added to the style number when you search
+
+  styleNumber: StyleNumber! @relation(name: "ShoeToStyleNumber")
+  colorway: Colorway! @relation(name: "ShoeToColorway")
+
+  deadstock: Boolean!
+  releases: [DateTime!]!
+  msrp: Float
+
+  # defaults
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Brand @model {
+  id: ID! @isUnique
+  name: String! @isUnique  # 'Nike', 'Adidas', 'Converse' etc..
+  shoe: Shoe! @relation(name: "ShoeToBrand")
+  stylenNumbers: [StyleNumber!]! @relation(name: "StyleNumberToBrand")
+}
+
+type StyleNumber @model {
+  id: ID! @isUnique
+  code: String! @isUnique
+  brand: Brand! @relation(name: "StyleNumberToBrand")
+  colorWays: [Colorway!]! @relation(name: "StyleToColorway")
+  shoe: Shoe! @relation(name: "ShoeToStyleNumber")
+}
+
+type Colorway @model {
+  id: ID! @isUnique
+  color: Color! @relation(name: "ColorwayColor")
+  styleNumber: StyleNumber! @relation(name: "StyleToColorway")
+  shoe: Shoe! @relation(name: "ShoeToColorway")
+}
+
+type Color @model {
+  id: ID! @isUnique
+  name: String!
+  colorway: Colorway @relation(name: "ColorwayColor")
+}
