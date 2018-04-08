@@ -3,30 +3,42 @@ import { StyleSheet, Platform, View, SafeAreaView, WebView } from 'react-native'
 import InputStyleNumber from './components/InputStyleNumber'
 import SearchEBay from './components/SearchEBay';
 
-export default class App extends React.Component {
+// apollo
+import { ApolloProvider } from 'react-apollo';
+import { ApolloClient, HttpLink, InMemoryCache } from 'apollo-client-preset';
 
-  // async componentWillMount() {
-  //   await Expo.Font.loadAsync({
-  //     'Roboto': require('native-base/Fonts/Roboto.ttf'),
-  //     'Roboto_medium': require('native-base/Fonts/Roboto_medium.ttf'),
-  //   });
-  // }
-  
+const httpLink = new HttpLink({
+  uri: 'https://api.graph.cool/simple/v1/cjfnb7mq32i5l0189nd973xao'
+});
+
+const apolloClient = new ApolloClient({
+  link: httpLink,
+  cache: new InMemoryCache()
+})
+
+export default class App extends React.Component {
+    
   state = {
     styleNumber: 0
-  };
+  }
 
   render() {
     return (
-      <SafeAreaView style={styles.safeareastyle}>
-        <View style={{borderWidth: 1}}>
-          <InputStyleNumber 
-            styleNumber={this.state.styleNumber}
-            onStyleNumberInputed={this.onStyleNumberChanged} />
-        </View>
-        <SearchEBay
-          searchURL={this.state.searchURL} />
-      </SafeAreaView>
+      <ApolloProvider client={apolloClient}>
+        <SafeAreaView style={styles.safeareastyle}>
+
+          <View style={styles.inputPanel}>
+            <InputStyleNumber 
+              styleNumber={this.state.styleNumber}
+              onStyleNumberInputed={this.onStyleNumberChanged} />
+          </View>
+          <View style={styles.infoPanels}>
+            <SearchEBay
+              searchURL={this.state.searchURL} />
+          </View>
+
+        </SafeAreaView>
+      </ApolloProvider>
     );
   }
 
@@ -41,15 +53,13 @@ export default class App extends React.Component {
 }
 
 const styles = StyleSheet.create({
+  inputPanel: {},
+  infoPanels: {},
+
   safeareastyle: {
     flex: 1,
+    display: 'flex',
     paddingTop: (Platform.OS === 'ios' ? 0 : Expo.Constants.statusBarHeight),
     flexDirection: 'column'
-  },
-  viewmain: {
-    flex: 1,
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
   }
 });

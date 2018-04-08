@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, TextInput, View } from 'react-native';
+import { StyleSheet, TextInput, View, Button } from 'react-native';
 
 export default class InputStyleNumber extends React.Component {
   constructor(props) {
@@ -10,18 +10,41 @@ export default class InputStyleNumber extends React.Component {
     };
   }
 
+  onSearchByNike = () => {
+    console.log('search by nike');
+  }
+
+  onSearchByAdidas = () => {}
+
   render() {
     return (
-      <View style={inputStyle}>
-        <TextInput 
-          placeholder='Enter Style Number' 
-          autoCapitalize={'characters'}
-          maxLength={6}
-          clearTextOnFocus={true}
-          autoFocus={true}
-          value={this.state.styleNumber}
-          onChangeText={text => this.onChangeText(text)}
-          />
+      <View style={compStyles.viewContainer}>
+        <View style={compStyles.inputContainer}>
+          <TextInput 
+            style={compStyles.textinput}
+            placeholder='Style Number' 
+            autoCapitalize={'characters'}
+            maxLength={6}
+            clearTextOnFocus={true}
+            autoFocus={true}
+            value={this.state.styleNumber}
+            onChangeText={text => this.onChangeText(text)}
+            />
+        </View>
+        <View style={compStyles.buttonContainer}>
+          <Button 
+            style={compStyles.buttonStyle}
+            onPress={this.onSearchByNike}
+            title="Nike"
+            color="#841584"
+            accessibilityLabel="Search via Nike"/>
+          <Button 
+            style={compStyles.buttonStyle}
+            onPress={this.onSearchByAdidas}
+            title="Adidas"
+            color="red"
+            accessibilityLabel="Search via Nike"/>
+        </View>
       </View>
     );  
   }
@@ -35,8 +58,29 @@ export default class InputStyleNumber extends React.Component {
     });
   }
 }
-const inputStyle = StyleSheet.create({
-  input: {
+const compStyles = StyleSheet.create({
+  viewContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  inputContainer: {
+    display: 'flex',
+    flex: .5,
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  buttonContainer: {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  buttonStyle: {
+    color: "purple"
+  },
+  textinput: {
+    height: 40,
     borderWidth: 1,
-  }
+    textAlign: 'center',
+  },
 });
