@@ -1,5 +1,9 @@
 {
   "name": "sneakerheads",
   "version": "1.0.0",
-  "description": "My Graphcool Service"
+  "description": "My Graphcool Service",
+  "dependencies": {
+    "apollo-client-preset": "^1.0.8",
+    "react-apollo": "^2.1.3"
+  }
 }

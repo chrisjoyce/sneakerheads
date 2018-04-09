@@ -25,6 +25,9 @@ export default class InputStyleNumber extends React.Component {
             placeholder='Style Number' 
             autoCapitalize={'characters'}
             maxLength={6}
+            multiline={false}
+            autoCorrect={false}
+            underlineColorAndroid='rgba(0,0,0,0)'
             clearTextOnFocus={true}
             autoFocus={true}
             value={this.state.styleNumber}
@@ -36,7 +39,6 @@ export default class InputStyleNumber extends React.Component {
             style={compStyles.buttonStyle}
             onPress={this.onSearchByNike}
             title="Nike"
-            color="#841584"
             accessibilityLabel="Search via Nike"/>
           <Button 
             style={compStyles.buttonStyle}
@@ -62,25 +64,31 @@ const compStyles = StyleSheet.create({
   viewContainer: {
     display: 'flex',
     flexDirection: 'row',
+    justifyContent: 'space-around',
   },
   inputContainer: {
     display: 'flex',
-    flex: .5,
     flexDirection: 'row',
-    justifyContent: 'center',
   },
   buttonContainer: {
-    flex: 1,
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-around',
+    flex: .5,
   },
   buttonStyle: {
-    color: "purple"
+    fontSize: 18,
+    height: 40,
   },
   textinput: {
     height: 40,
-    borderWidth: 1,
+    width: 140,
+    fontSize: 18,
+    fontWeight: '400',
+    borderRadius: 50,
+    borderWidth: 2,
     textAlign: 'center',
+    alignSelf: 'center',
+    backgroundColor:'#98fb985d',
   },
 });

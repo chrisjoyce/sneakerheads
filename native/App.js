@@ -26,7 +26,6 @@ export default class App extends React.Component {
     return (
       <ApolloProvider client={apolloClient}>
         <SafeAreaView style={styles.safeareastyle}>
-
           <View style={styles.inputPanel}>
             <InputStyleNumber 
               styleNumber={this.state.styleNumber}

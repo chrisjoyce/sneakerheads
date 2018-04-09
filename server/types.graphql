@@ -40,9 +40,9 @@ type Brand @model {
 type StyleNumber @model {
   id: ID! @isUnique
   code: String! @isUnique
-  brand: Brand! @relation(name: "StyleNumberToBrand")
+  brand: Brand @relation(name: "StyleNumberToBrand")
   colorWays: [Colorway!]! @relation(name: "StyleToColorway")
-  shoe: Shoe! @relation(name: "ShoeToStyleNumber")
+  shoe: Shoe @relation(name: "ShoeToStyleNumber")
 }
 
 type Colorway @model {
