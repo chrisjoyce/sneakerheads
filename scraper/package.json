@@ -3,11 +3,20 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "scripts": {
+    "dev": "nodemon --exec 'ts-node --cache-directory .tscache' src/scraper.ts"
+  },
   "devDependencies": {
     "babel-preset-env": "^1.6.1"
   },
   "dependencies": {
+    "@types/lodash": "^4.14.118",
+    "@types/node": "^10.12.10",
+    "@types/puppeteer": "^1.6.4",
     "dotenv": "^5.0.1",
-    "nickjs": "^0.3.6"
+    "lodash": "^4.17.11",
+    "nickjs": "^0.3.6",
+    "puppeteer": "^1.8.0",
+    "typescript": "^2.9.2"
   }
 }
