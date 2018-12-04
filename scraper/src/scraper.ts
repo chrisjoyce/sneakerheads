@@ -22,6 +22,7 @@ import * as redis from 'redis';
 const { promisify } = require('util');
 const client = redis.createClient();
 const getAsync = promisify(client.get).bind(client);
+const lenAsync = promisify(client.llen).bind(client);
 
 import { RequestParser, ConsoleLogger } from './utils';
 
@@ -105,7 +106,7 @@ async function StartSoldSearch(): Promise<any> {
   let itemsToProcess: any[] = [];
   let finishedParsing: boolean = false;
 
-  while (!finishedParsing && currentPage < 20) {
+  while (!finishedParsing && currentPage < 5) {
 
     console.log('Parsing page: ', currentPage);
     console.log(`url: ${currentUrl}`);
@@ -144,13 +145,15 @@ async function StartSoldSearch(): Promise<any> {
 
 
     sold_shoes.forEach(item => {
-      client.rpush(unprocessedItems, JSON.stringify(item), redis.print);
+      client.rpush(unprocessedItems, JSON.stringify(item));
     });
 
 
-    client.llen('unprocessedItems', (err: any, numberOfItems: number) => {
-      console.log(`Items left to process: ${numberOfItems}`);
-    });
+    // let numberOfItems: number = await lenAsync(unprocessedItems);
+    // console.log(`Items left to process: ${numberOfItems}`);
+
+    // client.llen('unprocessedItems', (err: any, numberOfItems: number) => {
+    // });
 
     console.log(`${sold_shoes.length} items added to the processor`);
 
