@@ -13,10 +13,14 @@
     "@types/lodash": "^4.14.118",
     "@types/node": "^10.12.10",
     "@types/puppeteer": "^1.6.4",
+    "@types/redis": "^2.8.8",
+    "@types/winston": "^2.4.4",
     "dotenv": "^5.0.1",
     "lodash": "^4.17.11",
     "nickjs": "^0.3.6",
     "puppeteer": "^1.8.0",
-    "typescript": "^2.9.2"
+    "redis": "^2.8.0",
+    "typescript": "^2.9.2",
+    "winston": "^3.1.0"
   }
 }
