@@ -27,7 +27,6 @@ class SearchForShoe extends Component<{}, ISearchState> {
   
   render() {  
     return (
-
       <ApolloConsumer>
         { client => (
           <form onSubmit={this.handleSubmit}>
@@ -48,7 +47,6 @@ class SearchForShoe extends Component<{}, ISearchState> {
 
             </form>
         )}
-        
       </ApolloConsumer>
 
     )
