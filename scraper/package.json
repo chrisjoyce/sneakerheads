@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "dev": "nodemon --watch src/scraper.ts --exec 'ts-node --no-cache' src/scraper.ts",
+    "dev": "nodemon --watch src/scraper.ts --exec 'ts-node' src/scraper.ts",
     "process": "nodemon --watch src/processor.ts --exec 'ts-node --no-cache' src/processor.ts"
   },
   "devDependencies": {
@@ -17,10 +17,12 @@
     "@types/puppeteer": "^1.6.4",
     "@types/redis": "^2.8.8",
     "@types/winston": "^2.4.4",
+    "axios": "^0.19.0",
     "cheerio": "^1.0.0-rc.2",
     "dotenv": "^5.0.1",
     "lodash": "^4.17.11",
     "nickjs": "^0.3.6",
+    "nodemon": "^1.19.3",
     "puppeteer": "^1.8.0",
     "redis": "^2.8.0",
     "typescript": "^2.9.2",

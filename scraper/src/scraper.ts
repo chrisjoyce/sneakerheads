@@ -26,10 +26,6 @@ const lenAsync = promisify(client.llen).bind(client);
 
 import { RequestParser, ConsoleLogger } from './utils';
 
-// import fs from 'fs';
-// import logger from 'logger';
-// declare var location: any;
-
 client.on('error', (err) => {
   console.log('Error with redis: ' + err);
 });

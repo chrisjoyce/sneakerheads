@@ -1,0 +1,12 @@
+type Query {
+  userAdd(name: String): User
+}
+
+type User {
+  id: ID!
+  name: String
+}
+
+type Annoying {
+  id: ID
+}
