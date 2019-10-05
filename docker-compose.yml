@@ -1,8 +1,9 @@
-version: "3"
+version: '3'
 services:
   api:
   web:
   scraper:
+
   processor:
-network:
+network: 
   sneakernet:
