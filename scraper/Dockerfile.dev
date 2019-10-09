@@ -1,0 +1,9 @@
+FROM node:10
+
+WORKDIR /app
+COPY --chown=node:node package.json /app
+RUN yarn install
+
+WORKDIR /app
+# towards the end
+USER node

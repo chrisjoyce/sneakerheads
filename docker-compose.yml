@@ -1,9 +1,26 @@
 version: '3'
 services:
-  api:
-  web:
+  # api:
+  # web:
   scraper:
-
-  processor:
-network: 
+    container_name: sneakerheads_scraper
+    build:
+      context: scraper
+      dockerfile: Dockerfile.dev
+      args: 
+        NODE_ENV: development
+    volumes: 
+      - ./scraper:/app
+    networks: 
+      - sneakernet
+    # depends_on: 
+    #   - redis
+    command: bash -c "cd /app && yarn dev"
+  # processor:
+  # redis:
+  #   image: redis:alpine
+  #   container_name: sneakerheads_redis
+  #   networks:
+  #     - sneakernet
+networks: 
   sneakernet:

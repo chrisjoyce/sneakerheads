@@ -53,16 +53,6 @@ const priceIdentifier: string = '&_udlo=';
 
 function nextPage(page: puppeteer.Page): void { }
 
-function handlePaginationReturn(element: Element) {
-  // console.log(element.innerHTML);
-
-  let pages = element.querySelectorAll('ebayui-pagination__ol > ebayui-pagination__li, :not(ebayui-pagination__li--selected) > a');
-  console.log(pages.length);
-  pages.forEach(page => console.log(page.getAttribute('href')));
-
-  // await page.click()
-}
-
 function gotoNextPage(currentUrl: string, currentPage: number): string {
   const parsed_url: URL = new URL(currentUrl);
   parsed_url.searchParams.set('_pgn', `${currentPage}`);
