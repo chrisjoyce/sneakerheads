@@ -3,7 +3,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "lib": [
-      "ES6",
+      "es6",
       "dom"
     ],
     "module": "commonjs",

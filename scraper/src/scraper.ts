@@ -156,7 +156,7 @@ async function StartSoldSearch(): Promise<any> {
   }
 
   console.log(`${all_shoes.length} items added to the processor`);
-  all_shoes.forEach(shoe => client.sadd(unprocessedItems, JSON.stringify(shoe)));
+  all_shoes.forEach(shoe => client.lpush(unprocessedItems, JSON.stringify(shoe)));
   await browser.close();
   client.quit();
 }
