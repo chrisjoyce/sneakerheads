@@ -21,7 +21,7 @@
     "axios": "^0.19.0",
     "cheerio": "^1.0.0-rc.2",
     "dotenv": "^8.2.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.13",
     "nickjs": "^0.3.6",
     "nodemon": "^1.19.3",
     "puppeteer": "^1.8.0",
