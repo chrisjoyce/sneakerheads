@@ -22,3 +22,5 @@ services:
       - PGADMIN_DEFAULT_PASSWORD=test
     ports:
       - 3000:80
+networks: 
+  - sneakernet

@@ -4,7 +4,6 @@ export function RequestParser(req: any): void {
   if (['stylesheet', 'font', 'image'].indexOf(req.resourceType()) !== -1) { // || req.resourceType() === 'font') {
     req.abort();
   } else {
-    console.log(req.resourceType());
     req.continue();
   }
 }
