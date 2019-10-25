@@ -1,0 +1,9 @@
+node_modules/
+.tscache/
+**/*.map
+dist/
+build/
+tmp/
+temp/
+.idea/
+.vscode/

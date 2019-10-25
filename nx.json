@@ -1,0 +1,21 @@
+{
+  "npmScope": "sneakerheads.io",
+  "implicitDependencies": {
+    "workspace.json": "*",
+    "package.json": "*",
+    "tsconfig.json": "*",
+    "tslint.json": "*",
+    "nx.json": "*"
+  },
+  "projects": {
+    "processor": {
+      "tags": []
+    },
+    "scraper": {
+      "tags": []
+    },
+    "shared": {
+      "tags": []
+    }
+  }
+}
