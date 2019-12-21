@@ -2,36 +2,76 @@ import * as redis from 'redis';
 import { promisify } from 'util';
 import * as cheerio from 'cheerio';
 
-const client = redis.createClient();
-const lenAsync = promisify(client.llen).bind(client);
+export async function startProcessing() {
+  const client = redis.createClient({
+    host: '10.0.0.10'
+  });
+  const lenAsync = promisify(client.llen).bind(client);
 
-const getAsync = promisify(client.get).bind(client);
-const indexAsync = promisify(client.lindex).bind(client);
+  const getAsync = promisify(client.get).bind(client);
+  const indexAsync = promisify(client.lindex).bind(client);
+  const leftPopAsync = promisify(client.lpop).bind(client);
 
-async function startProcessing() {
-  let moreToProcess: boolean = true;
-  let itemToProcess: {};
-
-  console.log('hi');
-  
   let itemsToProcess: number = await lenAsync('unprocessedItems');
   console.log(`${itemsToProcess} left to process`);
 
   let currentProccessing: number = 0;
   while (currentProccessing < itemsToProcess) {
-    let item: { id: string, outer: string } = JSON.parse(await indexAsync('unprocessedItems', currentProccessing));
+    const item = JSON.parse(await leftPopAsync('unprocessedItems'));
+    // let item: { id: string; outer: string } = JSON.parse(
+    //   await indexAsync('unprocessedItems', currentProccessing)
+    // );
     // console.log(item.outer);
     const $ = cheerio.load(item.outer);
 
     const price: string = $('.s-item__price').text();
     const endDate: string = $('.s-item__ended-date.s-item__endedDate').text();
-    const shippingCost: string = $('.s-item__shipping.s-item__logisticsCost').text().replace(' shipping', '');
-    const freeShipping: boolean = shippingCost.toLowerCase().indexOf('free') !== -1;
-    const brand: string = $('.s-item__dynamicAttributes1').text().replace('Brand: ', '');
+    const shippingCost: string = $('.s-item__shipping.s-item__logisticsCost')
+      .text()
+      .replace(' shipping', '');
+    const freeShipping: boolean =
+      shippingCost.toLowerCase().indexOf('free') !== -1;
+    const brand: string = $('.s-item__dynamicAttributes1')
+      .text()
+      .replace('Brand: ', '');
     const summary: string = $('.s-item__summary').text();
+    const title: string = $('.s-item__title').text();
+    const styleRegex: RegExp = /(?<=\s|\()([\w]{6})([\s-])([\w]{3})(?= |\))/g;
 
+    const newStyleRegEx: RegExp = /(?<=_)([A-Z0-9]{6})([_])([\d]{3})(?=[\s_])/gs;
 
-    console.table({ id: item.id, brand, price, endDate, shippingCost, freeShipping, s: summary });
+    let st = title.replace(/-/g, '_');
+    st = st.replace(/\s|\(/g, '_');
+    st = st.replace(/\W+/g, '_');
+    console.log(st);
+
+    console.time('stringstart');
+    const found = st.match(newStyleRegEx);
+    console.timeEnd('stringstart');
+
+    console.time('execstart');
+    const blah = newStyleRegEx.exec(st);
+    console.timeEnd('execstart');
+
+    //console.log(blah);
+
+    // if (found) {
+    //   console.table({
+    //     title,
+    //     found
+    //   });
+    // }
+    console.log({
+      id: item.id,
+      brand,
+      price,
+      endDate,
+      shippingCost,
+      freeShipping,
+      title,
+      styleNumber: blah ? blah[1] : '',
+      colorWay: blah ? blah[3] : ''
+    });
 
     currentProccessing++;
   }

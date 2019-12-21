@@ -1,7 +1,7 @@
 import Layout from "../components/Layout";
 import { NextPage } from "next";
 
-type Props = {};
+interface Props = {};
 
 const InStoreSearch: NextPage<Props> = ({}) => (
   <Layout></Layout>

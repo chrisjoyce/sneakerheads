@@ -18,27 +18,12 @@
 
 import * as puppeteer from 'puppeteer';
 import * as _ from 'lodash';
-import * as redis from 'redis';
 
 import { CacheLayer } from './cache-layer';
-const { promisify } = require('util');
-
-
-
-
-const client = redis.createClient({
-  host: '10.0.0.10'
-});
-const getAsync = promisify(client.get).bind(client);
-const lenAsync = promisify(client.llen).bind(client);
 
 // const cacheLayer: CacheLayer = new CacheLayer({ redis: client });
 
 import { RequestParser, ConsoleLogger } from './utils';
-
-client.on('error', err => {
-  console.log('Error with redis: ' + err);
-});
 
 const unprocessedItems: string = 'unprocessedItems';
 const SOLD_ROOT: string =
@@ -51,9 +36,6 @@ const SOLD_ROOT: string =
 //   https://www.ebay.com/itm/New-Balance-Fresh-Foam-Paradox-Gore-Tex-Leather-Mid-Boot-Shoes-Men-Sz-9-HFLPXBL-/253853332031?oid=263964287745
 
 // want to add whatevers in original link to link from sold list so that can skip secondary click/interaction
-
-let browser: puppeteer.Browser;
-let page: puppeteer.Page;
 
 const paginationSelector: string = '.ebayui-pagination__ol';
 const pageIdentifier: string = '&_pgn=';
@@ -71,8 +53,6 @@ function handlePaginationReturn(element: Element) {
   );
   console.log(pages.length);
   // pages.forEach(page => console.log(page.getAttribute('href')));
-
-  // await page.click()
 }
 
 function gotoNextPage(currentUrl: string, currentPage: number): string {
@@ -81,23 +61,14 @@ function gotoNextPage(currentUrl: string, currentPage: number): string {
   return parsed_url.href;
 }
 
-async function fetchLastItemFound(): Promise<string> {
-  return await getAsync('lastProcessedItemId');
-}
+export async function StartSoldSearch(lastScrapedID): Promise<any> {
+  let browser: puppeteer.Browser;
+  let page: puppeteer.Page;
+  let all_shoes: any[] = [];
 
-async function DEBUG_override(): Promise<void> {
-  await client.set('lastProcessedItemId', '163409080976', redis.print);
-}
-let all_shoes: any[] = [];
-
-async function StartSoldSearch(): Promise<any> {
   let foundLastItemIndex: number = -1;
   let currentPage: number = 1;
-
-  // await DEBUG_override();
-  let lastScrapedID: string = await getAsync('lastScrapedId');
   let foundLastScrapedID: boolean = false;
-  let currentEndId: string;
 
   console.log(`Last processed item retrieved: ${lastScrapedID}`);
 
@@ -114,18 +85,14 @@ async function StartSoldSearch(): Promise<any> {
   await page.setJavaScriptEnabled(false);
 
   let currentUrl: string = SOLD_ROOT;
-  let itemsToProcess: any[] = [];
-  let finishedParsing: boolean = false;
-
 
   while (!foundLastScrapedID && currentPage < 3) {
     console.log('Parsing page: ', currentPage);
-    // console.log(`url: ${currentUrl}`);
     await page.goto(currentUrl, { waitUntil: 'networkidle2' });
 
-    let sold_shoes: {
-      id: string,
-      outer: string
+    const sold_shoes: {
+      id: string;
+      outer: string;
     }[] = await page.$$eval('.s-item', (links: Element[]) => {
       return links.map(link => {
         const el: Element = link.querySelector('.s-item__image > a');
@@ -142,25 +109,19 @@ async function StartSoldSearch(): Promise<any> {
       });
     });
 
-    foundLastScrapedID = ((foundLastItemIndex = sold_shoes.findIndex(shoe => shoe.id === lastScrapedID)) > -1);
-    console.log(foundLastScrapedID);
-    console.log(foundLastItemIndex);
+    foundLastScrapedID =
+      (foundLastItemIndex = sold_shoes.findIndex(
+        shoe => shoe.id === lastScrapedID
+      )) > -1;
 
-    foundLastItemIndex !== -1 && sold_shoes.splice(foundLastItemIndex);
-    
-    if (currentPage === 1 && sold_shoes.length > 0) {
-      currentEndId = sold_shoes[0].id;
-      client.set('lastScrapedId', currentEndId);
-    }
+    sold_shoes.splice(foundLastItemIndex);
+
+    console.log(`sold shoes length: ${sold_shoes.length}`);
 
     all_shoes = all_shoes.concat(sold_shoes);
     currentUrl = gotoNextPage(currentUrl, ++currentPage);
   }
 
-  console.log(`${all_shoes.length} items added to the processor`);
-  all_shoes.forEach(shoe => client.lpush(unprocessedItems, JSON.stringify(shoe)));
   await browser.close();
-  client.quit();
+  return all_shoes;
 }
-
-StartSoldSearch();
