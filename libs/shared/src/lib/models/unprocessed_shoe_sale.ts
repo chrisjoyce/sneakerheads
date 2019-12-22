@@ -1,8 +1,11 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
-import { ShoeSaleInterface } from './shoe_sale_base';
+import { ShoeSale } from './shoesale';
 
 @Entity()
-export class ShoeSale extends ShoeSaleInterface {
+export class UnprocessedShoeSale {
+  @PrimaryGeneratedColumn()
+  id: number;
+
   @Column()
   ebayId: string;
 
@@ -35,4 +38,9 @@ export class ShoeSale extends ShoeSaleInterface {
 
   @Column()
   image_url: string;
+
+  @Column({
+    nullable: true
+  })
+  size: number;
 }

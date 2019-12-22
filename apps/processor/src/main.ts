@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { ShoeSale } from '@sneakerheads.io/shared';
+import { ShoeSale, UnprocessedShoeSale } from '@sneakerheads.io/shared';
 import { startProcessing } from './app/processor';
 import { createConnection } from 'typeorm';
 
@@ -16,13 +16,15 @@ setImmediate(async () => {
     username: 'postgres',
     password: 'postgres',
     database: 'sneakerheads',
-    entities: [ShoeSale],
+    entities: [ShoeSale, UnprocessedShoeSale],
     logging: false,
     synchronize: true,
     name: 'test'
   });
 
   db.manager.clear(ShoeSale);
+  db.manager.clear(UnprocessedShoeSale);
+
   await startProcessing();
 
   const savedShoes: ShoeSale[] = await db.manager.find(ShoeSale, {

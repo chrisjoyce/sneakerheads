@@ -37,6 +37,8 @@ const SOLD_ROOT: string =
 
 // want to add whatevers in original link to link from sold list so that can skip secondary click/interaction
 
+const MensAthleticShoeRoot: string =
+  'https://www.ebay.com/b/Mens-Athletic-Shoes/15709/bn_57918?LH_Sold=1&rt=nc&_pgn=1';
 const paginationSelector: string = '.ebayui-pagination__ol';
 const pageIdentifier: string = '&_pgn=';
 const priceIdentifier: string = '&_udlo=';
@@ -84,7 +86,7 @@ export async function StartSoldSearch(lastScrapedID): Promise<any> {
   await page.setRequestInterception(true);
   await page.setJavaScriptEnabled(false);
 
-  let currentUrl: string = SOLD_ROOT;
+  let currentUrl: string = MensAthleticShoeRoot; // SOLD_ROOT;
 
   while (!foundLastScrapedID && currentPage < 3) {
     console.log('Parsing page: ', currentPage);

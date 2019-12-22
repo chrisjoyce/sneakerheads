@@ -1,7 +1,7 @@
 import * as redis from 'redis';
 import { promisify } from 'util';
 import * as cheerio from 'cheerio';
-import { ShoeSale } from '@sneakerheads.io/shared';
+import { ShoeSale, UnprocessedShoeSale } from '@sneakerheads.io/shared';
 import { createConnection } from 'typeorm';
 
 export async function startProcessing() {
@@ -15,7 +15,7 @@ export async function startProcessing() {
     username: 'postgres',
     password: 'postgres',
     database: 'sneakerheads',
-    entities: [ShoeSale],
+    entities: [ShoeSale, UnprocessedShoeSale],
     logging: true,
     synchronize: true
   });
@@ -90,11 +90,17 @@ export async function startProcessing() {
       image_url: data_image_url,
       original_url
     };
-    if (brand === 'Nike' && sale.styleNumber === '') {
+    let shoeSale;
+    if (sale.styleNumber === '') {
+      try {
+        shoeSale = new UnprocessedShoeSale();
+      } catch (e) {
+        console.log(e);
+      }
+    } else {
+      shoeSale = new ShoeSale();
     }
-    const shoeSale = new ShoeSale();
     Object.assign(shoeSale, sale);
-
     db.manager.save(shoeSale);
   }
 
