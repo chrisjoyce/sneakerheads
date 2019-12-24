@@ -36,16 +36,26 @@ async function StoreShoes(results) {
   client.set('lastScrapedId', results[0].id);
 }
 
-setInterval(async () => {
-  console.log('Scraping');
-  const lastScrapedId: number = await getAsync('lastScrapedId');
-  const results = await StartSoldSearch(lastScrapedId);
-  if (results.length > 0) {
-    StoreShoes(results);
-  }
-}, 10000);
+// setInterval(async () => {
+//   console.log('Scraping');
+//   const lastScrapedId: number = await getAsync('lastScrapedId');
+//   const results = await StartSoldSearch(lastScrapedId);
+//   console.log(await results.map(shoe => shoe.id));
+//   if (results.length > 0) {
+//     StoreShoes(results);
+//   }
+// }, 10000);
 
-process.on('beforeExit', () => {
+setImmediate(async () => {
+  // const lastScrapedId: number = await getAsync('lastScrapedId');
+  await StartSoldSearch();
+  console.log('Done Scraping');
+  // if (results.length > 0) {
+  //   StoreShoes(results);
+  // }
+});
+
+process.on('exit', () => {
   console.log('leaving!');
   client.quit();
 });

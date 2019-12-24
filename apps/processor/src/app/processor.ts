@@ -3,6 +3,7 @@ import { promisify } from 'util';
 import * as cheerio from 'cheerio';
 import { ShoeSale, UnprocessedShoeSale } from '@sneakerheads.io/shared';
 import { createConnection } from 'typeorm';
+import { Worker, QueueEvents } from 'bullmq';
 
 export async function startProcessing() {
   const client = redis.createClient({
@@ -14,11 +15,35 @@ export async function startProcessing() {
     host: '10.0.0.10',
     username: 'postgres',
     password: 'postgres',
+
     database: 'sneakerheads',
     entities: [ShoeSale, UnprocessedShoeSale],
     logging: true,
     synchronize: true
   });
+
+  const queue = new QueueEvents('sneakers', {
+    connection: {
+      host: '10.0.0.10'
+    }
+  });
+
+  queue.on('failed', (id, err) => {
+    console.log(`${id} job failed.`);
+  });
+  const worker = new Worker(
+    'sneakers',
+
+    async job => {
+      await job.moveToFailed(new Error('hmm, testing errors'), job.id, true);
+      return false;
+    },
+    {
+      connection: {
+        host: '10.0.0.10'
+      }
+    }
+  );
 
   const lenAsync = promisify(client.llen).bind(client);
 
@@ -55,6 +80,7 @@ export async function startProcessing() {
 
     const newStyleRegEx: RegExp = /(?<=_)([A-Z0-9]{6})([_])([\d]{3})(?=[\s_])/g;
 
+    const bids = $('s-item__bids s-item__bidCount').text();
     let data_image_url = $('img.s-item__image-img').data('src');
 
     if (!data_image_url) {

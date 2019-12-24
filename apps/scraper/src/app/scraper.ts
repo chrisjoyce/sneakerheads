@@ -18,12 +18,14 @@
 
 import * as puppeteer from 'puppeteer';
 import * as _ from 'lodash';
-
+import { Queue, JobsOptions } from 'bullmq';
+import * as redis from 'redis';
 import { CacheLayer } from './cache-layer';
 
 // const cacheLayer: CacheLayer = new CacheLayer({ redis: client });
 
 import { RequestParser, ConsoleLogger } from './utils';
+import { promisify } from 'util';
 
 const unprocessedItems: string = 'unprocessedItems';
 const SOLD_ROOT: string =
@@ -38,7 +40,9 @@ const SOLD_ROOT: string =
 // want to add whatevers in original link to link from sold list so that can skip secondary click/interaction
 
 const MensAthleticShoeRoot: string =
-  'https://www.ebay.com/b/Mens-Athletic-Shoes/15709/bn_57918?LH_Sold=1&rt=nc&_pgn=1';
+  'https://www.ebay.com/b/Mens-Athletic-Shoes/15709/bn_57918?rt=nc&LH_Sold=1&_sop=13&_udlo=40';
+
+// 'https://www.ebay.com/b/Mens-Athletic-Shoes/15709/bn_57918?LH_Sold=1&rt=nc&_sop=13&_pgn=1';
 const paginationSelector: string = '.ebayui-pagination__ol';
 const pageIdentifier: string = '&_pgn=';
 const priceIdentifier: string = '&_udlo=';
@@ -63,7 +67,18 @@ function gotoNextPage(currentUrl: string, currentPage: number): string {
   return parsed_url.href;
 }
 
-export async function StartSoldSearch(lastScrapedID): Promise<any> {
+const queue: Queue = new Queue('sneakers', {
+  connection: {
+    host: '10.0.0.10'
+  }
+});
+
+const client = redis.createClient({
+  host: '10.0.0.10'
+});
+const getAsync = promisify(client.get).bind(client);
+
+export async function StartSoldSearch(lastScrapedID_in = null): Promise<any> {
   let browser: puppeteer.Browser;
   let page: puppeteer.Page;
   let all_shoes: any[] = [];
@@ -72,9 +87,13 @@ export async function StartSoldSearch(lastScrapedID): Promise<any> {
   let currentPage: number = 1;
   let foundLastScrapedID: boolean = false;
 
+  const lastScrapedID = lastScrapedID_in || (await getAsync('lastScrapedId'));
+
   console.log(`Last processed item retrieved: ${lastScrapedID}`);
 
-  browser = await puppeteer.launch();
+  browser = await puppeteer.launch({
+    headless: false
+  });
   page = await browser.newPage();
 
   page.on('console', ConsoleLogger);
@@ -88,28 +107,34 @@ export async function StartSoldSearch(lastScrapedID): Promise<any> {
 
   let currentUrl: string = MensAthleticShoeRoot; // SOLD_ROOT;
 
-  while (!foundLastScrapedID && currentPage < 3) {
+  while (!foundLastScrapedID && currentPage < 2) {
     console.log('Parsing page: ', currentPage);
     await page.goto(currentUrl, { waitUntil: 'networkidle2' });
 
     const sold_shoes: {
       id: string;
       outer: string;
-    }[] = await page.$$eval('.s-item', (links: Element[]) => {
-      return links.map(link => {
-        const el: Element = link.querySelector('.s-item__image > a');
-        const href: string = el.getAttribute('href') || '';
-        const url: URL = new URL(href);
-        const id: string = url.pathname.slice(
-          url.pathname.lastIndexOf('/') + 1
-        );
+    }[] = await page.$$eval(
+      '.s-item',
+      (links: Element[], value: { lastScrapedID: string }) => {
+        return links.map(link => {
+          const el: Element = link.querySelector('.s-item__image > a');
+          const href: string = el.getAttribute('href') || '';
+          const url: URL = new URL(href);
+          const id: string = url.pathname.slice(
+            url.pathname.lastIndexOf('/') + 1
+          );
 
-        return {
-          id,
-          outer: link.outerHTML
-        };
-      });
-    });
+          return {
+            id,
+            outer: link.outerHTML
+          };
+        });
+      },
+      {
+        lastScrapedID
+      }
+    );
 
     foundLastScrapedID =
       (foundLastItemIndex = sold_shoes.findIndex(
@@ -118,12 +143,28 @@ export async function StartSoldSearch(lastScrapedID): Promise<any> {
 
     sold_shoes.splice(foundLastItemIndex);
 
-    console.log(`sold shoes length: ${sold_shoes.length}`);
+    const jobs: {
+      name: string;
+      data: any;
+      opts?: JobsOptions;
+    }[] = sold_shoes.map(shoe => {
+      return {
+        name: 'sneakers',
+        data: shoe
+      };
+    });
 
-    all_shoes = all_shoes.concat(sold_shoes);
+    if (jobs.length) {
+      queue.addBulk(jobs);
+      console.log(`${jobs.length} jobs added to the queue`);
+      if (currentPage === 1) {
+        console.log('Storing scraped id');
+        const lastScraped = jobs[0].data.id;
+        client.set('lastScrapedId', lastScraped);
+      }
+    }
     currentUrl = gotoNextPage(currentUrl, ++currentPage);
   }
 
   await browser.close();
-  return all_shoes;
 }
