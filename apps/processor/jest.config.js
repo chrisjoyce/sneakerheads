@@ -1,5 +1,6 @@
 module.exports = {
-  name: 'processor',
-  preset: '../../jest.config.js',
-  coverageDirectory: '../../coverage/apps/processor'
+  preset: '../../jest.preset.js',
+  coverageDirectory: '../../coverage/apps/processor',
+  globals: { 'ts-jest': { tsConfig: '<rootDir>/tsconfig.spec.json' } },
+  displayName: 'processor',
 };

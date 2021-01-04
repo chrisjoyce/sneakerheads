@@ -14,7 +14,10 @@
             "outputPath": "dist/apps/processor",
             "main": "apps/processor/src/main.ts",
             "tsConfig": "apps/processor/tsconfig.app.json",
-            "assets": ["apps/processor/src/assets"]
+            "assets": [
+              "apps/processor/src/assets"
+            ],
+            "buildLibsFromSource": true
           },
           "configurations": {
             "production": {
@@ -28,7 +31,10 @@
                 }
               ]
             }
-          }
+          },
+          "outputs": [
+            "{options.outputPath}"
+          ]
         },
         "serve": {
           "builder": "@nrwl/node:execute",
@@ -37,23 +43,24 @@
           }
         },
         "lint": {
-          "builder": "@nrwl/linter:lint",
+          "builder": "@nrwl/linter:eslint",
           "options": {
-            "linter": "eslint",
-            "config": "apps/processor/.eslintrc",
-            "tsConfig": [
-              "apps/processor/tsconfig.app.json",
-              "apps/processor/tsconfig.spec.json"
-            ],
-            "exclude": ["**/node_modules/**", "!apps/processor/**"]
+            "lintFilePatterns": [
+              "apps/processor/**/*.ts",
+              "apps/processor/**/*.spec.ts",
+              "apps/processor/**/*.d.ts"
+            ]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
           "options": {
             "jestConfig": "apps/processor/jest.config.js",
-            "tsConfig": "apps/processor/tsconfig.spec.json"
-          }
+            "passWithNoTests": true
+          },
+          "outputs": [
+            "coverage/apps/processor"
+          ]
         }
       }
     },
@@ -70,7 +77,10 @@
             "outputPath": "dist/apps/scraper",
             "main": "apps/scraper/src/main.ts",
             "tsConfig": "apps/scraper/tsconfig.app.json",
-            "assets": ["apps/scraper/src/assets"]
+            "assets": [
+              "apps/scraper/src/assets"
+            ],
+            "buildLibsFromSource": true
           },
           "configurations": {
             "production": {
@@ -84,7 +94,10 @@
                 }
               ]
             }
-          }
+          },
+          "outputs": [
+            "{options.outputPath}"
+          ]
         },
         "serve": {
           "builder": "@nrwl/node:execute",
@@ -93,23 +106,24 @@
           }
         },
         "lint": {
-          "builder": "@nrwl/linter:lint",
+          "builder": "@nrwl/linter:eslint",
           "options": {
-            "linter": "eslint",
-            "config": "apps/scraper/.eslintrc",
-            "tsConfig": [
-              "apps/scraper/tsconfig.app.json",
-              "apps/scraper/tsconfig.spec.json"
-            ],
-            "exclude": ["**/node_modules/**", "!apps/scraper/**"]
+            "lintFilePatterns": [
+              "apps/scraper/**/*.ts",
+              "apps/scraper/**/*.spec.ts",
+              "apps/scraper/**/*.d.ts"
+            ]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
           "options": {
             "jestConfig": "apps/scraper/jest.config.js",
-            "tsConfig": "apps/scraper/tsconfig.spec.json"
-          }
+            "passWithNoTests": true
+          },
+          "outputs": [
+            "coverage/apps/scraper"
+          ]
         }
       }
     },
@@ -126,15 +140,21 @@
               "libs/shared/tsconfig.lib.json",
               "libs/shared/tsconfig.spec.json"
             ],
-            "exclude": ["**/node_modules/**", "!libs/shared/**"]
+            "exclude": [
+              "**/node_modules/**",
+              "!libs/shared/**/*"
+            ]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
           "options": {
             "jestConfig": "libs/shared/jest.config.js",
-            "tsConfig": "libs/shared/tsconfig.spec.json"
-          }
+            "passWithNoTests": true
+          },
+          "outputs": [
+            "coverage/libs/shared"
+          ]
         }
       }
     },
@@ -151,7 +171,10 @@
             "outputPath": "dist/apps/api",
             "main": "apps/api/src/main.ts",
             "tsConfig": "apps/api/tsconfig.app.json",
-            "assets": ["apps/api/src/assets"]
+            "assets": [
+              "apps/api/src/assets"
+            ],
+            "buildLibsFromSource": true
           },
           "configurations": {
             "production": {
@@ -165,7 +188,10 @@
                 }
               ]
             }
-          }
+          },
+          "outputs": [
+            "{options.outputPath}"
+          ]
         },
         "serve": {
           "builder": "@nrwl/node:execute",
@@ -174,23 +200,24 @@
           }
         },
         "lint": {
-          "builder": "@nrwl/linter:lint",
+          "builder": "@nrwl/linter:eslint",
           "options": {
-            "linter": "eslint",
-            "config": "apps/api/.eslintrc",
-            "tsConfig": [
-              "apps/api/tsconfig.app.json",
-              "apps/api/tsconfig.spec.json"
-            ],
-            "exclude": ["**/node_modules/**", "!apps/api/**"]
+            "lintFilePatterns": [
+              "apps/api/**/*.ts",
+              "apps/api/**/*.spec.ts",
+              "apps/api/**/*.d.ts"
+            ]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
           "options": {
             "jestConfig": "apps/api/jest.config.js",
-            "tsConfig": "apps/api/tsconfig.spec.json"
-          }
+            "passWithNoTests": true
+          },
+          "outputs": [
+            "coverage/apps/api"
+          ]
         }
       }
     }
